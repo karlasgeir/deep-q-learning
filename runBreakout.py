@@ -1,13 +1,11 @@
+import torch
+from itertools import count
 from ExperienceReplay import ExperienceReplay
 from EpsilonDecay import EpsilonDecay
 from breakout.BreakoutDQNProblem import BreakoutDQNProblem
 from Plotter import Plotter
 
-import torch
-from itertools import count
-
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 def runBreakout():
     episodes = 30000
@@ -46,11 +44,10 @@ def runBreakout():
                       f'\tEpsilon: {epsilonDecay.epsilon()}\n'
                       f'\tEpisode steps: {step}\n'
                       f'\tTotal steps: {totalSteps}\n'
-                      )
+                  )
 
                 break
 
 
 if __name__ == '__main__':
     runBreakout()
-

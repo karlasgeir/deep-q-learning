@@ -1,15 +1,19 @@
 import torch
-
 import matplotlib.pyplot as plt
+import os
 
 
 class Plotter:
-    def __init__(self, title, xlabel, ylabel, movingAveragePeriod):
+    def __init__(self, title, xlabel, ylabel, movingAveragePeriod, directory='plots'):
         self.title = title
         self.xlabel = xlabel
         self.ylabel = ylabel
         self.values = []
         self.movingAveragePeriod = movingAveragePeriod
+        self.directory = directory
+
+        if not os.path.exists(self.directory):
+            os.mkdir(self.directory)
 
     def calculateMovingAverage(self):
         values = torch.tensor(self.values, dtype=torch.float)
@@ -24,7 +28,6 @@ class Plotter:
 
     def append(self, value):
         self.values.append(value)
-        self.plot()
 
     def _saveInterval(self):
         if len(self.values) < 100:
@@ -33,8 +36,23 @@ class Plotter:
             return 50
         return 100
 
-    def plot(self):
-        if len(self.values) % self._saveInterval() == 0:
+    def plot(self, step=None):
+        plt.clf()
+
+        plt.title(self.title)
+        plt.xlabel(self.xlabel)
+        plt.ylabel(self.ylabel)
+        plt.plot(self.values)
+
+        filename = os.path.join(self.directory, f'ep_{len(self.values)}')
+
+        if step is not None:
+            filename = '%s_%d' % (filename, step)
+
+        plt.savefig(f'{filename}.png', dpi=300)
+
+    def plotMovingAverage(self, episode, step=None, force=False):
+        if len(self.values) % self._saveInterval() == 0 or force:
             plt.clf()
 
             plt.title(self.title)
@@ -44,7 +62,13 @@ class Plotter:
 
             movingAverage = self.calculateMovingAverage()
             plt.plot(movingAverage)
-            plt.savefig(f'plots/ep_{len(self.values)}.png', dpi=300)
+
+            filename = os.path.join(self.directory, f'ep_{episode}')
+
+            if step is not None:
+                filename = '%s_%d' % (filename, step)
+
+            plt.savefig(f'{filename}.png', dpi=300)
 
     def getMovingAverage(self):
         return self.calculateMovingAverage()[-1]

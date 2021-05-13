@@ -15,7 +15,7 @@ class ExperienceReplay:
         self.experiences.append(experience)
 
     def getExperiences(self):
-        if len(self.experiences) > self.startThreshold:
+        if len(self.experiences) >= self.startThreshold:
             states, actions, rewards, nextStates, isDones = zip(*random.sample(self.experiences, self.batchSize))
 
             return torch.cat(states), torch.cat(actions), torch.cat(rewards), torch.cat(nextStates), isDones
